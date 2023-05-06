@@ -1,17 +1,17 @@
 import { request } from "near-social-bridge";
 
-interface CreateThingResponse {
+interface AddCardResponse {
   error?: string;
   success?: boolean;
 }
 
 // UPDATE THIS TO MATCH YOUR TYPE
-interface CreateThingPayload {
+interface AddCardPayload {
   title: string,
   description: string
 }
 
-const createThing = (payload: any) => {
-  return request<CreateThingResponse>("create-thing", payload);
+const addCard = (payload: any) => {
+  return request<AddCardResponse>("add-card", payload);
 };
-export default createThing;
+export default addCard;

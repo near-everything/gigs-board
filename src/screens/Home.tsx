@@ -11,9 +11,10 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Container from "../components/Container";
-import CreatorForm from "../components/CreatorForm";
+import CreatorForm from "../components/GigsBoard";
 import Loading from "../components/Loading";
 import { PreHomeScreenProps } from "../routes/NavigationProps";
+import GigsBoard from "../components/GigsBoard";
 
 const Home: React.FC<PreHomeScreenProps> = ({ navigation }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,7 +39,7 @@ const Home: React.FC<PreHomeScreenProps> = ({ navigation }) => {
   return (
     <Box margin={"auto"}>
       <Container>
-        <CreatorForm setIsLoading={setIsLoading} handleError={handleError} handleSuccess={handleSuccess} />
+        <GigsBoard />
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
