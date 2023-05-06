@@ -1,16 +1,19 @@
 import {
-  Box, Button, Modal,
+  Box,
+  Button,
+  Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay, useDisclosure
+  ModalOverlay,
+  useDisclosure
 } from "@chakra-ui/react";
 import { useState } from "react";
 import Container from "../components/Container";
 import CreatorForm from "../components/CreatorForm";
-import { PreHomeScreenProps } from "../routes/NavigationProps";
 import Loading from "../components/Loading";
+import { PreHomeScreenProps } from "../routes/NavigationProps";
 
 const Home: React.FC<PreHomeScreenProps> = ({ navigation }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -22,20 +25,19 @@ const Home: React.FC<PreHomeScreenProps> = ({ navigation }) => {
   const handleError = (errors: any) => {
     setMessage(errors);
     onOpen();
-  }
+  };
 
   const handleSuccess = () => {
     setMessage(SUCCESSFULLY_CREATED);
     onOpen();
-  }
+  };
 
   if (isLoading) {
     return <Loading />;
   }
   return (
-    <Box maxWidth={500} margin={"auto"}>
+    <Box margin={"auto"}>
       <Container>
-        
         <CreatorForm setIsLoading={setIsLoading} handleError={handleError} handleSuccess={handleSuccess} />
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
