@@ -1,8 +1,6 @@
-# Thing Creator
+# Gigs Board
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/near-everything/thing-creator)
-
-This is the front end for your Everything.Create.[YOUR TYPE] widget.
+Just a simple react app with [react-trello](https://github.com/rcdexta/react-trello), served from the [Gig.Board Widget](https://near.org/near/widget/ComponentDetailsPage?src=efiz.near/widget/Gigs.Board), hooked up via [near-social-bridge](https://github.com/wpdas/near-social-bridge);
 
 ```json
 "scripts": {
@@ -17,5 +15,4 @@ This is the front end for your Everything.Create.[YOUR TYPE] widget.
 ## Development
 
 * Make changes here
-* Build and deploy or use ngrok
-* Put external url in Everything.Create.[YOUR TYPE]
+* Build and deploy or use [ngrok](https://ngrok.com/)
