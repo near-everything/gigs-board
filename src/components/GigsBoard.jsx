@@ -1,20 +1,21 @@
 import {
-  Box, Button, Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay, Spinner, Text, useDisclosure
+  Box,
+  Button,
+  Flex,
+  Modal, ModalOverlay,
+  Spinner,
+  Text,
+  useDisclosure
 } from "@chakra-ui/react";
 import { useInitialPayload } from "near-social-bridge";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import Board from "react-trello";
 import addCard from "../services/addCard";
 import deleteCard from "../services/deleteCard";
 import getCards from "../services/getCards";
 import moveCardAcrossLanes from "../services/moveCardAcrossLanes";
 import GigsCard from "./GigsCard";
+import GigsCardDetails from "./GigsCardDetails";
 
 const GigsBoard = () => {
   const template = useInitialPayload();
@@ -49,7 +50,9 @@ const GigsBoard = () => {
 
   const handleCardClick = (cardId, metadata, laneId) => {
     // doesn't work when data is dragged around, cuz we don't update it after
-    console.log(`card clicked: id: ${cardId}, metadata: ${metadata}, lane: ${laneId}`);
+    console.log(
+      `card clicked: id: ${cardId}, metadata: ${metadata}, lane: ${laneId}`
+    );
     const card = data.lanes
       .find((lane) => lane.id === laneId)
       .cards.find((card) => card.id === cardId);
@@ -58,13 +61,32 @@ const GigsBoard = () => {
     onOpen();
   };
 
-  const handleCardMoveAcrossLanes = async (fromLaneId, toLaneId, cardId, index) => {
+  const handleCardMoveAcrossLanes = async (
+    fromLaneId,
+    toLaneId,
+    cardId,
+    index
+  ) => {
     // call the bridge function
-    const response = await moveCardAcrossLanes(fromLaneId, toLaneId, cardId, index);
-    if (response.error || (response.success && response.success.preventDefault)) {
+    const response = await moveCardAcrossLanes(
+      fromLaneId,
+      toLaneId,
+      cardId,
+      index
+    );
+    if (
+      response.error ||
+      (response.success && response.success.preventDefault)
+    ) {
       // preventDefault === true means to not actually reflect the lane move via react-trello
       // aka: a data update is required via dao proposal or such
-      eventBus.publish({type: 'MOVE_CARD', fromLaneId: toLaneId, toLaneId: fromLaneId, cardId, index})
+      eventBus.publish({
+        type: "MOVE_CARD",
+        fromLaneId: toLaneId,
+        toLaneId: fromLaneId,
+        cardId,
+        index,
+      });
     }
   };
 
@@ -133,17 +155,7 @@ const GigsBoard = () => {
         motionPreset={{ base: "slideInBottom", md: "scale" }}
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Text>{selectedCard?.title}</Text>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
-          </ModalHeader>
-          <ModalBody>
-            <ReactMarkdown children={selectedCard?.body} />
-          </ModalBody>
-        </ModalContent>
+        <GigsCardDetails selectedCard={selectedCard} onClose={onClose} />
       </Modal>
     </Flex>
   );
