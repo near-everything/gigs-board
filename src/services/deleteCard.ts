@@ -5,13 +5,12 @@ interface DeleteCardResponse {
   success?: boolean;
 }
 
-// UPDATE THIS TO MATCH YOUR TYPE
 interface DeleteCardPayload {
-  title: string,
-  description: string
+  card: any, // This should match the data type
+  laneId: string
 }
 
-const deleteCard = (payload: any) => {
+const deleteCard = (payload: DeleteCardPayload) => {
   return request<DeleteCardResponse>("delete-card", payload);
 };
 export default deleteCard;

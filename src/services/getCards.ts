@@ -5,7 +5,6 @@ interface GetCardsResponse {
   success?: boolean;
 }
 
-// UPDATE THIS TO MATCH YOUR TYPE
 interface GetCardsPayload {
   title: string,
   description: string

@@ -1,68 +1,29 @@
 import {
-  Flex,
+  Box, Button, Flex,
   Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-  Button,
-  Text,
-  Spinner,
-  Box,
+  ModalOverlay, Spinner, Text, useDisclosure
 } from "@chakra-ui/react";
+import { useInitialPayload } from "near-social-bridge";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Board from "react-trello";
 import addCard from "../services/addCard";
 import deleteCard from "../services/deleteCard";
 import getCards from "../services/getCards";
+import moveCardAcrossLanes from "../services/moveCardAcrossLanes";
 import GigsCard from "./GigsCard";
 
-const template = {
-  lanes: [
-    {
-      currentPage: 1,
-      id: "proposed",
-      style: {
-        border: 0,
-        backgroundColor: "initial",
-      },
-      title: "Proposed",
-      cards: [],
-    },
-    {
-      currentPage: 1,
-      id: "in-progress",
-      // label: "10/20",
-      style: {
-        border: 0,
-        backgroundColor: "initial",
-      },
-      title: "In Progress",
-      disallowAddingCard: true,
-      cards: [],
-    },
-    {
-      currentPage: 1,
-      id: "completed",
-      style: {
-        border: 0,
-        backgroundColor: "initial",
-      },
-      title: "Completed",
-      disallowAddingCard: true,
-      cards: [],
-    },
-  ],
-};
-
 const GigsBoard = () => {
+  const template = useInitialPayload();
   const [data, setData] = useState(template);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedCard, setSelectedCard] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [eventBus, setEventBus] = useState(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +31,6 @@ const GigsBoard = () => {
         const data = await handleGetCards();
         setData(data);
         setIsLoading(false);
-        // Fix error handling, should check the object for errors
       } catch (error) {
         setIsError(true);
         setIsLoading(false);
@@ -88,8 +48,8 @@ const GigsBoard = () => {
   };
 
   const handleCardClick = (cardId, metadata, laneId) => {
-    // doesn't work when data is dragged around, cuz we don't update it after. 
-    console.log(`card: ${cardId}, metadata: ${metadata}, lane: ${laneId}`);
+    // doesn't work when data is dragged around, cuz we don't update it after
+    console.log(`card clicked: id: ${cardId}, metadata: ${metadata}, lane: ${laneId}`);
     const card = data.lanes
       .find((lane) => lane.id === laneId)
       .cards.find((card) => card.id === cardId);
@@ -98,12 +58,15 @@ const GigsBoard = () => {
     onOpen();
   };
 
-  const handleCardMoveAcrossLanes = (fromLaneId, toLaneId, cardId, index) => {
-    console.log(`fromLaneId: ${fromLaneId}, toLaneId: ${toLaneId}, cardId: ${cardId}, index: ${index}`);
-    // I'm thinking maybe the drag is allowed, but it triggers a dao proposal
-    // then forces it back to where it was before (a card can only change lanes when approved by a dao)
-    // OR maybe different lanes have different requirements...
-  }
+  const handleCardMoveAcrossLanes = async (fromLaneId, toLaneId, cardId, index) => {
+    // call the bridge function
+    const response = await moveCardAcrossLanes(fromLaneId, toLaneId, cardId, index);
+    if (response.error || (response.success && response.success.preventDefault)) {
+      // preventDefault === true means to not actually reflect the lane move via react-trello
+      // aka: a data update is required via dao proposal or such
+      eventBus.publish({type: 'MOVE_CARD', fromLaneId: toLaneId, toLaneId: fromLaneId, cardId, index})
+    }
+  };
 
   function rebuildTemplate(cards, template) {
     const newLanes = template.lanes.map((lane) => {
@@ -161,6 +124,7 @@ const GigsBoard = () => {
         components={{ Card: GigsCard }}
         style={{ backgroundColor: "inherit" }}
         onCardMoveAcrossLanes={handleCardMoveAcrossLanes}
+        eventBusHandle={(handle) => setEventBus(handle)}
       />
       <Modal
         isOpen={isOpen}

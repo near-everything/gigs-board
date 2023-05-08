@@ -5,13 +5,13 @@ interface AddCardResponse {
   success?: boolean;
 }
 
-// UPDATE THIS TO MATCH YOUR TYPE
 interface AddCardPayload {
-  title: string,
-  description: string
+  card: any, // This should match the data type
+  laneId: string
 }
 
-const addCard = (payload: any) => {
+const addCard = (payload: AddCardPayload) => {
   return request<AddCardResponse>("add-card", payload);
 };
+
 export default addCard;
